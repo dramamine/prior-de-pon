@@ -6,29 +6,31 @@ package gameplay
 
 	public class Board extends FlxGroup
 	{
-		private var allBlocks:FlxGroup;
+		//private var allBlocks:FlxGroup;
 		private var blocks:Vector.<Vector.<Block>>;
 		private static const COLUMNS:int = 6;
 		//private static const NEW_BLOCK_ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
 		private var rowCounter:uint = 0;
+		private var scrolledOffset:Number = 0; // the number of pixels already scrolled.
+		private static const ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
+		
+		
 		
 		
 		/**
 		 * Board is the main class that controls all the available blocks.
 		 * Here, we're setting up vectors and a FlxGroup to track the blocks. 
-		 * @param X: the X-coordinate of the "point of block origin".
-		 * @param Y: the Y-coordinate of the "point of block origin".
 		 * @param SimpleGraphic: should be null. This is a FlxSprite so that we
 		 * can move all blocks at once.
 		 * 
 		 */		
-		public function Board(X:Number=0, Y:Number=0, SimpleGraphic:Class)
+		public function Board()
 		{
-			super(X,Y,SimpleGraphic);
+			super();
 			
-			allBlocks = new FlxGroup;
+			//allBlocks = new FlxGroup;
 			blocks = new Vector.<Vector.<Block>>;
-			for(var i = 0; i < COLUMNS; i++)
+			for(var i:int = 0; i < COLUMNS; i++)
 			{
 				blocks.push( new Vector.<Block> );
 			}
@@ -36,13 +38,6 @@ package gameplay
 			
 			
 		}
-
-		
-		/**
-		 * 
-		 * @return 
-		 * 
-		 */		
 
 		
 		/**
@@ -55,13 +50,13 @@ package gameplay
 		 * 
 		 * 
 		 */		
-		public function initialize(rows:int = 9, jagged:Boolean = false)
+		public function initialize(rows:int = 9, jagged:Boolean = false):void
 		{
 			// must be called before creating blocks
 			Block.initDictionary();
 			
 			
-			for (var i = 0; i < rows; i++)
+			for (var i:int = 0; i < rows; i++)
 			{
 				addRow();
 			}
@@ -73,32 +68,40 @@ package gameplay
 		 * it moves all the blocks upwards. 
 		 * 
 		 */		
-		private function addRow()
+		private function addRow():void
 		{
-			const blockYOrigin:Number = Block.HEIGHT * rowCounter;
 			// make room for new rows
 			if(blocks[0][0] != null
-				&& blocks[0][0].y > blockYOrigin)
+				&& blocks[0][0].y > ORIGIN.y + rowCounter * Block.HEIGHT)
 			{
-				scroll( blockYOrigin );
+				scroll( ORIGIN.y + rowCounter * Block.HEIGHT );
 			}
 			
 			// add a random block to each column
 			var newBlock:Block;
-			for(var column = 0; column < blocks.length; column++)
+			for(var column:int = 0; column < blocks.length; column++)
 			{
 				newBlock = new Block( Math.floor(Math.random() * Block.UNIQUE_BLOCKS ));
-				
-				blocks[column].unshift(  );
+				newBlock.x = ORIGIN.x + column * Block.WIDTH;
+				newBlock.y = ORIGIN.y + rowCounter * Block.HEIGHT - scrolledOffset;
+				blocks[column].unshift( newBlock );
+				trace('added a new block with color ' + newBlock.color 
+					+ ' and coordinates (' + newBlock.x + ',' + newBlock.y + ')');
 			}
 			
 			rowCounter++;
 		}
 		
-		private function scroll(pixels:int)
+		private function scroll(pixels:int):void
 		{
+			// TODO might be faster via a camera.
 			// TODO add tweening later
-			this.y -= pixels;
+			for each (var block:FlxSprite in members)
+			{
+				block.y -= pixels;
+			}
+			
+			scrolledOffset += pixels;
 		}
 		
 		

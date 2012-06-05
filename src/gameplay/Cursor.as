@@ -1,12 +1,9 @@
-package gameplay
+ackage gameplay
 {
-	import org.flixel.FlxSprite;
-	
-	public class Cursor extends FlxSprite
+	public class Cursor
 	{
-		public function Cursor(X:Number=0, Y:Number=0, SimpleGraphic:Class=null)
+		public function Cursor()
 		{
-			super(X, Y, SimpleGraphic);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 package gameplay
 {
 	import org.flixel.FlxState;
+	import org.flixel.FlxPoint;
 
 	public class SinglePlayer extends FlxState
 	{
-		private static const BOARD_ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
 		private var _board:Board;
 		
 		/**
@@ -16,12 +16,9 @@ package gameplay
 		public function SinglePlayer()
 		{
 			super();
+			board = new Board();
 		}
-		
-		override public function create()
-		{
-			board = new Board(BOARD_ORIGIN.x, BOARD_ORIGIN.y);
-		}
+
 		
 		
 		public function get board():Board
