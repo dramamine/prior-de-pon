@@ -1,0 +1,82 @@
+package gameplay
+{
+	import flash.utils.Dictionary;
+	
+	import org.flixel.FlxSprite;
+	
+	[Embed(source="../../assets/block-blue.gif")] public static var BlueGIF:Class;
+	[Embed(source="../../assets/block-cyan.gif")] public static var CyanGIF:Class;
+	[Embed(source="../../assets/block-green.gif")] public static var GreenGIF:Class;
+	[Embed(source="../../assets/block-magenta.gif")] public static var MagentaGIF:Class;
+	[Embed(source="../../assets/block-red.gif")] public static var RedGIF:Class;
+	[Embed(source="../../assets/block-yellow.gif")] public static var YellowGIF:Class;
+	
+	
+	class States
+	{
+		public static const INACTIVE:uint = 0;
+		public static const ACTIVE:uint = 1;
+		public static const MATCHED:uint = 2;
+		public static const GARBAGE:uint = 3;
+		
+	}
+	
+	class Colors
+	{
+		public static const BLUE:uint = 0;
+		public static const CYAN:uint = 1;
+		public static const GREEN:uint = 2;
+		public static const MAGENTA:uint = 3;
+		public static const RED:uint = 4;
+		public static const YELLOW:uint = 5;
+	}
+	
+	public class Block extends FlxSprite
+	{
+		public static const HEIGHT:Number = 16;
+		public static const WIDTH:Number = 16;
+		public static const UNIQUE_BLOCKS:uint = 6;
+		
+		private static var graphicLookup:Dictionary;
+		
+		private var _state:uint;
+		
+		/**
+		 * Trying to design Blocks to involve as little code/action as possible.
+		 * Most of the action should come from Board, etc. 
+		 * 
+		 */		
+		public function Block(color:uint, X:Number=0, Y:Number=0)
+		{
+			super(X, Y, graphicLookup[color]);
+			this.state = States.INACTIVE;
+		}
+		
+		/**
+		 * Required for looking up the graphic assets of the blocks. This must be run
+		 * before creating blocks or there won't be any graphics! 
+		 * 
+		 * 
+		 */		
+		public static function initDictionary()
+		{
+			graphicLookup[Colors.BLUE] = BlueGIF;
+			graphicLookup[Colors.CYAN] = CyanGIF;
+			graphicLookup[Colors.MAGENTA] = MagentaGIF;
+			graphicLookup[Colors.GREEN] = GreenGIF;
+			graphicLookup[Colors.RED] = RedGIF;
+			graphicLookup[Colors.YELLOW] = YellowGIF;
+		}
+
+		public function get state():uint
+		{
+			return _state;
+		}
+
+		public function set state(value:uint):void
+		{
+			_state = value;
+		}
+
+	}
+}
