@@ -10,8 +10,9 @@ package gameplay
 		private var blocks:Vector.<Vector.<Block>>;
 		private static const COLUMNS:int = 6;
 		//private static const NEW_BLOCK_ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
-		private var rowCounter:uint = 0;
+		//private var rowCounter:uint = 0;
 		private var scrolledOffset:Number = 0; // the number of pixels already scrolled.
+		private var rowCounter:int = 0; // the number of rows already generated.
 		private static const ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
 		
 		
@@ -70,12 +71,6 @@ package gameplay
 		 */		
 		private function addRow():void
 		{
-			// make room for new rows
-			if(blocks[0][0] != null
-				&& blocks[0][0].y > ORIGIN.y + rowCounter * Block.HEIGHT)
-			{
-				scroll( ORIGIN.y + rowCounter * Block.HEIGHT );
-			}
 			
 			// add a random block to each column
 			var newBlock:Block;
@@ -85,15 +80,24 @@ package gameplay
 				newBlock.x = ORIGIN.x + column * Block.WIDTH;
 				newBlock.y = ORIGIN.y + rowCounter * Block.HEIGHT - scrolledOffset;
 				blocks[column].unshift( newBlock );
-				trace('added a new block with color ' + newBlock.color 
+				add(newBlock);
+				trace('added a new block with color ' + newBlock.type 
 					+ ' and coordinates (' + newBlock.x + ',' + newBlock.y + ')');
 			}
 			
+			// check the last newBlock's y. if it's below the origin, we should move all blocks up.
+			if (newBlock.y > ORIGIN.y)
+			{
+				scroll(newBlock.y - ORIGIN.y);
+			}
+			
 			rowCounter++;
+			
 		}
 		
 		private function scroll(pixels:int):void
 		{
+			trace('scroll called with pixels: ' + pixels);
 			// TODO might be faster via a camera.
 			// TODO add tweening later
 			for each (var block:FlxSprite in members)

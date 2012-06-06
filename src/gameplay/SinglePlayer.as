@@ -15,8 +15,11 @@ package gameplay
 		 */		
 		public function SinglePlayer()
 		{
+			trace('singleplayer called');
 			super();
 			board = new Board();
+			add(board);
+			board.initialize();
 		}
 
 		

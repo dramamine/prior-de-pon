@@ -22,6 +22,7 @@ package gameplay
 		
 		private static var graphicLookup:Dictionary;
 		
+		private var _type:uint;
 		private var _state:uint;
 		
 		/**
@@ -32,6 +33,7 @@ package gameplay
 		public function Block(color:uint, X:Number=0, Y:Number=0)
 		{
 			super(X, Y, graphicLookup[color]);
+			this.type = color;
 			this.state = States.INACTIVE;
 		}
 		
@@ -43,6 +45,7 @@ package gameplay
 		 */		
 		public static function initDictionary():void
 		{
+			graphicLookup = new Dictionary();
 			graphicLookup[Colors.BLUE] = BlueGIF;
 			graphicLookup[Colors.CYAN] = CyanGIF;
 			graphicLookup[Colors.MAGENTA] = MagentaGIF;
@@ -59,6 +62,16 @@ package gameplay
 		public function set state(value:uint):void
 		{
 			_state = value;
+		}
+
+		public function get type():uint
+		{
+			return _type;
+		}
+
+		public function set type(value:uint):void
+		{
+			_type = value;
 		}
 		
 
