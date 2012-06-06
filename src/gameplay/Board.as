@@ -142,11 +142,29 @@ package gameplay
 			}
 			
 			// look downwards
-			for(rowIndex= row + 1; (rowIndex < blocks[col].length - 1) && (blocks[col][row].equals(blocks[col][rowIndex])); rowIndex++)
+			for(rowIndex= row + 1; (rowIndex < blocks[col].length) && (blocks[col][row].equals(blocks[col][rowIndex])); rowIndex++)
 			{
 				trace('found a match below.');
 				verticalBlocks.push( blocks[col][rowIndex] );
 			}
+			
+			var colIndex:int;
+			// look left
+			for(colIndex = col - 1; (colIndex > 0) && (blocks[col][row].equals(blocks[colIndex][row])); colIndex--)
+			{
+				trace('found a match above.');
+				verticalBlocks.push( blocks[colIndex][row] );
+			}
+			
+			// look right
+			for(colIndex = col + 1; (colIndex < blocks.length) && (blocks[col][row].equals(blocks[colIndex][row])); colIndex++)
+			{
+				trace('found a match below.');
+				verticalBlocks.push( blocks[colIndex][row] );
+			}
+			
+			
+			
 			
 			if(verticalBlocks.length >= 2 || horizontalBlocks.length >= 2)
 			{

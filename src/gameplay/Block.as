@@ -98,15 +98,10 @@ package gameplay
 		public function match()
 		{
 			this.state = Block.MATCHED;
+			this.flicker(2.5);
 		}
 
 	}
-}
-
-class States
-{
-	
-	
 }
 
 class Colors
