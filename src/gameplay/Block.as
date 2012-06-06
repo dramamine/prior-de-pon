@@ -20,6 +20,11 @@ package gameplay
 		public static const WIDTH:Number = 16;
 		public static const UNIQUE_BLOCKS:uint = 6;
 		
+		public static const INACTIVE:uint = 0;
+		public static const ACTIVE:uint = 1;
+		public static const MATCHED:uint = 2;
+		public static const GARBAGE:uint = 3;
+		
 		private static var graphicLookup:Dictionary;
 		
 		private var _type:uint;
@@ -34,7 +39,7 @@ package gameplay
 		{
 			super(X, Y, graphicLookup[color]);
 			this.type = color;
-			this.state = States.INACTIVE;
+			this.state = Block.INACTIVE;
 		}
 		
 		/**
@@ -74,16 +79,33 @@ package gameplay
 			_type = value;
 		}
 		
+		public function equals(o:Object):Boolean
+		{
+			if(o is Block
+				&& this.type == Block(o).type
+				&& this.state == Block(o).state)
+			{
+				return true;
+			}
+			return false;
+		}
+		
+		/**
+		 * Called when a block is matched. Handle fancy graphics and stuff. 
+		 * @return 
+		 * 
+		 */		
+		public function match()
+		{
+			this.state = Block.MATCHED;
+		}
 
 	}
 }
 
 class States
 {
-	public static const INACTIVE:uint = 0;
-	public static const ACTIVE:uint = 1;
-	public static const MATCHED:uint = 2;
-	public static const GARBAGE:uint = 3;
+	
 	
 }
 

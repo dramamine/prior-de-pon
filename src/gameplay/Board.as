@@ -1,5 +1,7 @@
 package gameplay
 {
+	import com.greensock.TweenLite;
+	
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
@@ -95,6 +97,11 @@ package gameplay
 			
 		}
 		
+		/**
+		 * Scrolls each block upwards by a certain number of pixels. 
+		 * @param pixels: the number of pixels.
+		 * 
+		 */		
 		private function scroll(pixels:int):void
 		{
 			trace('scroll called with pixels: ' + pixels);
@@ -108,6 +115,123 @@ package gameplay
 			scrolledOffset += pixels;
 		}
 		
+		public function checkAll():void
+		{
+			for (var i:uint = 0; i < blocks.length; i++)
+			{
+				for (var j:uint = 0; j < blocks[i].length; j++)
+				{
+					checkSet(i,j);
+				}
+			}
+		}
+		
+		private function checkSet(col:uint, row:uint)
+		{
+			trace('checkSet called with coordinates (' + col + ',' + row + ')');
+			// check for vertical matches
+			var verticalBlocks:Vector.<Block> = new Vector.<Block>();
+			var horizontalBlocks:Vector.<Block> = new Vector.<Block>();
+			
+			var rowIndex:int;
+			// look upwards
+			for(rowIndex = row - 1; (rowIndex > 0) && (blocks[col][row].equals(blocks[col][rowIndex])); rowIndex--)
+			{
+				trace('found a match above.');
+				verticalBlocks.push( blocks[col][rowIndex] );
+			}
+			
+			// look downwards
+			for(rowIndex= row + 1; (rowIndex < blocks[col].length - 1) && (blocks[col][row].equals(blocks[col][rowIndex])); rowIndex++)
+			{
+				trace('found a match below.');
+				verticalBlocks.push( blocks[col][rowIndex] );
+			}
+			
+			if(verticalBlocks.length >= 2 || horizontalBlocks.length >= 2)
+			{
+				var matchedBlocks:Vector.<Block> = new Vector.<Block>();
+				matchedBlocks.push(blocks[col][row]);
+				
+				if(verticalBlocks.length >= 2)
+				{
+					for each(var block:Block in verticalBlocks)
+					{
+						matchedBlocks.push(block);
+					}
+				}
+				if(horizontalBlocks.length >= 2)
+				{
+					for each(var block:Block in horizontalBlocks)
+					{
+						matchedBlocks.push(block);
+					}
+				}
+				
+				// handle blocks
+				handleSet(matchedBlocks);
+				
+			}
+			
+			
+			
+			
+		}
+		
+		/**
+		 * This function sets all blocks to MATCHED, calls a timer to make them disappear,
+		 * and handles chain / combo / scoring effects. 
+		 * @param matchedBlocks: a Vector containing blocks that are part of a set.
+		 * 
+		 */		
+		private function handleSet(matchedBlocks:Vector.<Block>):void
+		{
+			trace('handleSet called with ' + matchedBlocks.length + ' blocks.');
+			// TODO Auto Generated method stub
+			for each(var block:Block in matchedBlocks)
+			{
+				block.match();
+			}
+			
+			TweenLite.delayedCall(2.5, function()
+			{
+				// TODO could make these "chain-delete", might be cooler.
+				for each(var block:Block in matchedBlocks)
+				{
+					block.kill();
+				}
+				
+				checkGravity();				
+			});
+		}
+		
+		/**
+		 * This sets up each block to fall as it should.
+		 * Flixel does have some functions to handle gravity, but we need to make sure our
+		 * "blocks" vector is set up properly. 
+		 * 
+		 */		
+		private function checkGravity():void
+		{
+			trace('checkGravity called.');
+			for each(var column:Vector.<Block> in blocks)
+			{
+				// TODO make sure we're not dealing with huge blocks of garbage.
+				
+				//column.filter( function(b:Block):Boolean{ return b.alive });
+				
+				for(var index:int = 0; index < column.length; index++)
+				{
+					if(column[index].alive) continue;
+					else
+					{
+						column.splice(index,1);
+						column.slice(index).map( function(b:Block, i:int, a:*){b.y += Block.HEIGHT;} );
+						index--;
+					}
+				}
+			}
+		}
 		
 	}
 }

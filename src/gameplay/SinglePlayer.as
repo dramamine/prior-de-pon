@@ -1,7 +1,9 @@
 package gameplay
 {
-	import org.flixel.FlxState;
+	import com.greensock.TweenLite;
+	
 	import org.flixel.FlxPoint;
+	import org.flixel.FlxState;
 
 	public class SinglePlayer extends FlxState
 	{
@@ -20,6 +22,8 @@ package gameplay
 			board = new Board();
 			add(board);
 			board.initialize();
+			
+			TweenLite.delayedCall(3, board.checkAll);
 		}
 
 		
