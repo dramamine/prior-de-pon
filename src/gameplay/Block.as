@@ -29,6 +29,9 @@ package gameplay
 		
 		private var _type:uint;
 		private var _state:uint;
+		private var _wasMoved:Boolean;
+		
+		private var _position:uint;
 		
 		/**
 		 * Trying to design Blocks to involve as little code/action as possible.
@@ -40,6 +43,7 @@ package gameplay
 			super(X, Y, graphicLookup[color]);
 			this.type = color;
 			this.state = Block.INACTIVE;
+			this.wasMoved = true;
 		}
 		
 		/**
@@ -99,6 +103,35 @@ package gameplay
 		{
 			this.state = Block.MATCHED;
 			this.flicker(2.5);
+		}
+
+		public function get wasMoved():Boolean
+		{
+			return _wasMoved;
+		}
+
+		public function set wasMoved(value:Boolean):void
+		{
+			_wasMoved = value;
+		}
+
+		public function get position():uint
+		{
+			return _position;
+		}
+
+		public function set position(value:uint):void
+		{
+			_position = value;
+		}
+
+		public function get column():uint
+		{
+			return Math.floor(position / Board.COLUMNS);
+		}
+		public function get row():int
+		{
+			return position % Board.COLUMNS;
 		}
 
 	}
