@@ -31,7 +31,9 @@ package gameplay
 		private var _state:uint;
 		private var _wasMoved:Boolean;
 		
-		private var _position:uint;
+		//private var _position:uint;
+		private var _row:uint = 0;
+		private var _column:uint = 0;
 		
 		/**
 		 * Trying to design Blocks to involve as little code/action as possible.
@@ -115,24 +117,26 @@ package gameplay
 			_wasMoved = value;
 		}
 
-		public function get position():uint
-		{
-			return _position;
-		}
-
-		public function set position(value:uint):void
-		{
-			_position = value;
-		}
-
 		public function get column():uint
 		{
-			return Math.floor(position / Board.COLUMNS);
+			return _column;
 		}
-		public function get row():int
+
+		public function set column(value:uint):void
 		{
-			return position % Board.COLUMNS;
+			_column = value;
 		}
+
+		public function get row():uint
+		{
+			return _row;
+		}
+
+		public function set row(value:uint):void
+		{
+			_row = value;
+		}
+
 
 	}
 }

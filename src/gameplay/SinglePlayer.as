@@ -7,7 +7,7 @@ package gameplay
 
 	public class SinglePlayer extends FlxState
 	{
-		private var _board:Board;
+		//private var _board:Board;
 		
 		/**
 		 * SinglePlayer is our basic state for one-player, solo games.
@@ -19,23 +19,19 @@ package gameplay
 		{
 			trace('singleplayer called');
 			super();
-			board = new Board();
-			add(board);
-			board.initialize();
 			
-			TweenLite.delayedCall(3, board.checkAll);
-		}
-
-		
-		
-		public function get board():Board
-		{
-			return _board;
-		}
-
-		public function set board(value:Board):void
-		{
-			_board = value;
+			var controller:Controller = new Controller();
+			add(controller);
+			controller.initialize();
+			
+			
+			//board = new Board();
+			//add(board);
+			//board.initialize();
+			
+			//TweenLite.delayedCall(3, board.checkAll);
+			
+			
 		}
 
 		
