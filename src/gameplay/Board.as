@@ -42,28 +42,6 @@ package gameplay
 				column++;
 			}
 			
-			/*
-			// add a random block to each column
-			var newBlock:Block;
-			for(var column:int = 0; column < blocks.length; column++)
-			{
-				newBlock = new Block( Math.floor(Math.random() * Block.UNIQUE_BLOCKS ));
-				
-				
-				//blocks[column].unshift( newBlock );
-				add(newBlock);
-				trace('added a new block with color ' + newBlock.type 
-					+ ' and coordinates (' + newBlock.x + ',' + newBlock.y + ')');
-			}
-			
-			// check the last newBlock's y. if it's below the origin, we should move all blocks up.
-			if (newBlock.y > ORIGIN.y)
-			{
-				scroll(newBlock.y - ORIGIN.y);
-			}
-			
-			rowCounter++;
-			*/
 		}
 		
 		/**
@@ -72,10 +50,11 @@ package gameplay
 		 * @return 
 		 * 
 		 */		
-		public function checkForSet(block:Block):Vector.<Block>
-		{
-			return null;
-		}
+//		public function checkForSet(block:Block):Vector.<Block>
+//		{
+//			return null;
+//		}
+		
 		
 		public function checkEverything()
 		{
@@ -162,28 +141,11 @@ package gameplay
 		
 		private function getColumn(column:int):Vector.<Block>
 		{
-			/*
-			var matchColumnandSortByRow:Array;
-			matchColumnandSortByRow = members.filter( function(o:Block):Boolean
-			{
-				return o.column == column;
-			});
-			matchColumnandSortByRow.sort( function(a:Block, b:Block):int
-			{
-				if(a.row < b.row) return -1;
-				else if(a.row > b.row) return 1;
-				else return 0;
-				//sortOn("row", Array.NUMERIC);
-			});
-			return Vector.<Block>(matchColumnandSortByRow);
-			*/
-			
 			
 			
 			function columnMatcher(o:Block, index:int, arr:Array):Boolean
 			{
 				if(o == null) return false;
-				//trace('found column ID ' + Block(arr[index]).column + ' (on the o:Block it was ' + o.column + ')');
 				return o.column == column;
 			}
 			
@@ -192,13 +154,11 @@ package gameplay
 				if(a.row < b.row) return -1;
 				else if(a.row > b.row) return 1;
 				else return 0;
-				//sortOn("row", Array.NUMERIC);
 			}
 			
 			
+			return Vector.<Block>( this.members.filter(columnMatcher).sort(rowSorter) );
 			
-			var result:Vector.<Block> = Vector.<Block>( this.members.filter(columnMatcher).sort(rowSorter) );
-			return result;
 		}
 		
 		private function getRow(row:int):Vector.<Block>
