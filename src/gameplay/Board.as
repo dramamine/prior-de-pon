@@ -45,17 +45,27 @@ package gameplay
 		}
 		
 		/**
-		 * If the given block is part of a set, this function returns all the blocks that are part of that set. 
-		 * @param block
-		 * @return 
+		 * If the given block is part of a set, this function returns all the blocks that are part of that set.
+		 * WARNING: right now, this function could return false positives, ex. if there's a set in this
+		 * block's column, that doesn't include this block in particular. But right now, we're only using
+		 * this function in the init() function to make sure that we start with a board with no sets, so
+		 * it shouldn't be a problem. 
+		 * @param block: The block to check.
+		 * @return a Vector with all the blocks that form sets.
 		 * 
 		 */		
-//		public function checkForSet(block:Block):Vector.<Block>
-//		{
-//			return null;
-//		}
+		public function checkForSet(block:Block):Vector.<Block>
+		{
+			return checkColumn(block.column).concat(checkRow(block.row));
+		}
 		
 		
+		/**
+		 * This checks the entire board and handles any sets. (I'm not sure if we ever need to call this
+		 * besides during debugging; it's overkill for basically all situations.) 
+		 * @return 
+		 * 
+		 */
 		public function checkEverything()
 		{
 			// check all columns

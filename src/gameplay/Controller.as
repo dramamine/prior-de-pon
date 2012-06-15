@@ -66,7 +66,7 @@ package gameplay
 				// only need to be checked on first-run.
 				for each(var block:Block in newRow)
 				{
-					while(board.checkForSet(block) != null)
+					while(board.checkForSet(block).length > 0)
 					{
 						// this block causes a set
 						// we need to change its color
