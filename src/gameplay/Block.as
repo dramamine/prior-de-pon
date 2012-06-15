@@ -124,6 +124,12 @@ package gameplay
 
 		public function set column(value:uint):void
 		{
+			//trace('block at (' + this.column + ',' + this.row + ') moved to column ' + value);
+			// also handle graphics
+			// TODO tweening, let's just do it suddenly for now
+			var columnDelta:int = value - this.column;
+			this.x += columnDelta * Block.WIDTH;
+			//trace('new x: ' + this.x);
 			_column = value;
 		}
 
@@ -134,6 +140,11 @@ package gameplay
 
 		public function set row(value:uint):void
 		{
+			// also handle graphics
+			// TODO tweening, let's just do it suddenly for now
+			var rowDelta:int = value - this.row;
+			this.y -= rowDelta * Block.HEIGHT;
+			
 			_row = value;
 		}
 

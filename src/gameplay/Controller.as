@@ -3,6 +3,7 @@ package gameplay
 	import com.greensock.TweenLite;
 	
 	import org.flixel.FlxBasic;
+	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxObject;
 	import org.flixel.FlxPoint;
@@ -20,7 +21,7 @@ package gameplay
 		private static const ORIGIN:FlxPoint = new FlxPoint( 50, 200 );
 
 		private var board:Board;
-		
+		private var cursor:Cursor;
 		
 		
 		
@@ -40,8 +41,9 @@ package gameplay
 			
 			TweenLite.delayedCall(2.5, board.checkEverything);
 			
+			
+			
 		}
-		
 		
 		/**
 		 * Creates a starting board. Also performs checks to make sure we
@@ -66,12 +68,15 @@ package gameplay
 				// only need to be checked on first-run.
 				for each(var block:Block in newRow)
 				{
+					// this block is for preventing initial matches
+					/*
 					while(board.checkForSet(block).length > 0)
 					{
 						// this block causes a set
 						// we need to change its color
 						block.type = Math.floor(Math.random() * Block.UNIQUE_BLOCKS);
 					}
+					*/
 				}
 			}
 			
