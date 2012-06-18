@@ -7,6 +7,7 @@ package gameplay
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
+	import org.flixel.FlxU;
 	
 	public class Board extends FlxGroup
 	{
@@ -14,9 +15,11 @@ package gameplay
 		public static const MAX_ROWS:int = 13;
 		public static const PANIC_ROWS:int = 10;
 		public static const ORIGIN:FlxPoint = new FlxPoint(50,200);
+		public static const LEVEL:int = 99;
 		private var _scrollingOffset:int = 0;
 		
 		private var cursor:Cursor;
+		private var timer:GameTimer;
 		private var blocks:FlxGroup;
 		private var cursorGroup:FlxGroup;
 		
@@ -33,6 +36,10 @@ package gameplay
 			cursorGroup.add(cursor);
 			cursor.x += ORIGIN.x;
 			cursor.y += ORIGIN.y;
+			
+			timer = new GameTimer(this);
+			timer.run();
+			
 		}
 		
 		
@@ -81,7 +88,9 @@ package gameplay
 				blockB.column--;
 			}
 			
-			
+			checkRow(row);
+			checkColumn(column);
+			checkColumn(column+1);
 			
 		}
 		
@@ -318,18 +327,19 @@ package gameplay
 		 * @param pixels: the number of pixels.
 		 * 
 		 */		
-		//		private function scroll(pixels:int):void
-		//		{
-		//			trace('scroll called with pixels: ' + pixels);
-		//			// TODO might be faster via a camera.
-		//			// TODO add tweening later
-		//			for each (var block:FlxSprite in members)
-		//			{
-		//				block.y -= pixels;
-		//			}
-		//			
-		//			scrolledOffset += pixels;
-		//		}
+		public function scroll(pixels:int = 1):void
+		{
+			trace('scroll called with pixels: ' + pixels);
+			// TODO might be faster via a camera.
+			// TODO add tweening later
+			for each (var block:Block in blocks.members)
+			{
+				block.y -= pixels;
+			}
+			cursor.y -= pixels;
+			
+			scrollingOffset += pixels;
+		}
 		
 		//		public function checkAll():void
 		//		{
@@ -450,6 +460,31 @@ package gameplay
 		
 		private function checkGravity():void
 		{
+			var column:Vector.<Block>;
+			var lastRealBlock:int = 0;
+			for (var i:int=0; i < Board.COLUMNS; i++)
+			{
+				column = getColumn(i);
+				// assumes that this is sorted by row
+				for each (var block:Block in column)
+				{
+					if (block.exists
+						&& block.row == lastRealBlock)
+					{
+						// everything's good
+						lastRealBlock++;
+					}
+					else
+					{
+						// move it down enough rows
+						block.row == lastRealBlock;
+						lastRealBlock++;
+					}
+					
+				}
+				
+			}
+			
 			//			trace('checkGravity called.');
 			//			for each(var column:Vector.<Block> in blocks)
 			//			{
@@ -473,10 +508,12 @@ package gameplay
 		
 		override public function update():void
 		{
-			if(FlxG.keys.SPACE)
+			if(FlxG.keys.justPressed("SPACE"))
 			{
 				swap( cursor.row, cursor.column );
 			}
+			
+			
 			
 			super.update();
 		}
