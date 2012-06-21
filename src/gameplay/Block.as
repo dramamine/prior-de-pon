@@ -45,6 +45,7 @@ package gameplay
 			super(X, Y, graphicLookup[color]);
 			this.type = color;
 			this.state = Block.INACTIVE;
+			this.alpha = .5;
 			this.wasMoved = true;
 		}
 		
@@ -83,6 +84,7 @@ package gameplay
 		public function set type(value:uint):void
 		{
 			_type = value;
+			this.loadGraphic( graphicLookup[value] );
 		}
 		
 		public function equals(o:Object):Boolean
@@ -105,6 +107,11 @@ package gameplay
 		{
 			this.state = Block.MATCHED;
 			this.flicker(2.5);
+		}
+		public function activate()
+		{
+			this.state = Block.ACTIVE;
+			this.alpha = 1;
 		}
 
 		public function get wasMoved():Boolean

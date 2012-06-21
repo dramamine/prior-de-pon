@@ -48,7 +48,7 @@ package gameplay
 		 * @param blocks
 		 * 
 		 */		
-		public function addRow(newBlocks:Vector.<Block>):void
+		public function addRow(newBlocks:Vector.<Block>, checkForSets:Boolean = true):void
 		{
 			this.shiftUpwards();
 			
@@ -56,6 +56,7 @@ package gameplay
 			for each(var block:Block in newBlocks)
 			{
 				blocks.add(block);
+				
 				
 				
 				// 6/15 handling column/row adjustment from the block class
@@ -67,6 +68,21 @@ package gameplay
 				
 				column++;
 			}
+			
+			// row 0 comes in as inactive.
+			// let's activate row 1.
+			for each(var block:Block in getRow(1))
+			{
+				block.activate();
+			}
+			if(checkForSets)
+			{
+				for each(var block:Block in getRow(1))
+				{
+					handleSet(checkForSet(block));
+				}
+			}
+			
 			
 			
 			
@@ -111,21 +127,36 @@ package gameplay
 		//		}
 		
 		
-		public function checkEverything()
+		/**
+		 * Checks the entire board for matches.
+		 * WARNING: returns duplicates if a block is in a horizontal and a vertical set! 
+		 * @return: a Vector containing all the blocks in matches.
+		 * 
+		 */
+		public function checkEverything():Vector.<Block>
 		{
+			var resultSet:Vector.<Block> = new Vector.<Block>();
 			// check all columns
 			for (var column:int = 0; column < Board.COLUMNS; column++)
 			{
-				trace('checking column ' + column);
-				handleSet(checkColumn(column));
+				trace('checking column ' + column + ' which has ' + checkColumn(column).length + ' matches.');
+				if(checkColumn(column).length > 0)
+				{
+					
+					trace('hi');
+					resultSet = resultSet.concat(checkColumn(column));
+				}
+				
 			}
 			
 			// check all rows
 			for (var row:int = 0; row < Board.MAX_ROWS; row++)
 			{
-				trace('checking row ' + row);
-				handleSet(checkRow(row));
+				trace('checking row ' + row + ' which has ' + checkRow(row).length + ' matches.');
+				resultSet = resultSet.concat(checkRow(row));
 			}
+			
+			return resultSet;
 		}
 		
 		/**
@@ -195,6 +226,9 @@ package gameplay
 		 */
 		private static function getSequenceCount(blocks:Vector.<Block>, indexToCheck:int):int
 		{
+			// don't check inactive blocks!
+			//if( blocks[indexToCheck].state != Block.ACTIVE ) return 0;
+			
 			var counter:int = 1;
 			for (var iterator:int = indexToCheck+1; iterator < blocks.length; iterator++)
 			{
@@ -525,6 +559,23 @@ package gameplay
 			//			}
 		}
 		
+		public function eliminateMatches():void
+		{
+			var allMatches:Vector.<Block> = this.checkEverything();
+			trace('found ' + allMatches.length + ' matches.');
+			var randomBlock:Block;
+			while(allMatches.length > 0)
+			{
+				// this block causes a set
+				// we need to change its color
+				// get random block
+				randomBlock = allMatches[ Math.floor(Math.random() * allMatches.length) ];
+				randomBlock.type = Math.floor(Math.random() * Block.UNIQUE_BLOCKS);
+				
+				//try again
+				allMatches = this.checkEverything();
+			}
+		}
 		
 		override public function update():void
 		{

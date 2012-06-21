@@ -39,7 +39,7 @@ package gameplay
 			board = new Board();		
 			add(board);
 			
-			TweenLite.delayedCall(2.5, board.checkEverything);
+			//TweenLite.delayedCall(2.5, board.checkEverything);
 			
 			
 			
@@ -63,22 +63,11 @@ package gameplay
 			for(var i:int = 0; i < rows; i++)
 			{
 				newRow = generateRow();
-				board.addRow(newRow);
-				//board.addRow( generateRow() );
-				// only need to be checked on first-run.
-				for each(var block:Block in newRow)
-				{
-					// this block is for preventing initial matches
-					
-					while(board.checkForSet(block).length > 0)
-					{
-						// this block causes a set
-						// we need to change its color
-						block.type = Math.floor(Math.random() * Block.UNIQUE_BLOCKS);
-					}
-					
-				}
+				board.addRow(newRow, false);
+
 			}
+			
+			board.eliminateMatches();
 			
 		}
 		
