@@ -90,9 +90,12 @@ package gameplay
 				blockB.column--;
 			}
 			
-			handleSet(checkRow(row));
-			handleSet(checkColumn(column));
-			handleSet(checkColumn(column+1));
+			// handle any potential matches all at once
+			handleSet(
+				checkRow(row)
+				.concat(checkColumn(column))
+				.concat(checkColumn(column+1))
+			);
 			
 		}
 		

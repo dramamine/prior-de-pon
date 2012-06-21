@@ -69,14 +69,14 @@ package gameplay
 				for each(var block:Block in newRow)
 				{
 					// this block is for preventing initial matches
-					/*
+					
 					while(board.checkForSet(block).length > 0)
 					{
 						// this block causes a set
 						// we need to change its color
 						block.type = Math.floor(Math.random() * Block.UNIQUE_BLOCKS);
 					}
-					*/
+					
 				}
 			}
 			
