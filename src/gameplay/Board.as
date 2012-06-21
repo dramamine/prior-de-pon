@@ -68,6 +68,8 @@ package gameplay
 				column++;
 			}
 			
+			
+			
 		}
 		
 		/**
@@ -88,9 +90,9 @@ package gameplay
 				blockB.column--;
 			}
 			
-			checkRow(row);
-			checkColumn(column);
-			checkColumn(column+1);
+			handleSet(checkRow(row));
+			handleSet(checkColumn(column));
+			handleSet(checkColumn(column+1));
 			
 		}
 		
@@ -296,7 +298,7 @@ package gameplay
 			}
 			
 			// actual pixels
-			if(scrollingOffset < Block.HEIGHT)
+			if(scrollingOffset <= Block.HEIGHT)
 			{
 				for each (var b:Block in blocks.members)
 				{
@@ -308,7 +310,11 @@ package gameplay
 			else
 			{
 				trace('warning: scrollingOffset was too high!');
+				scrollingOffset = 0;
 			}
+
+			// update cursor's row tracker
+			cursor.row++;
 		}
 		
 		public function get scrollingOffset():int
@@ -319,6 +325,7 @@ package gameplay
 		public function set scrollingOffset(value:int):void
 		{
 			_scrollingOffset = value;
+			
 		}
 		
 		
@@ -329,7 +336,7 @@ package gameplay
 		 */		
 		public function scroll(pixels:int = 1):void
 		{
-			trace('scroll called with pixels: ' + pixels);
+			//trace('scroll called with pixels: ' + pixels);
 			// TODO might be faster via a camera.
 			// TODO add tweening later
 			for each (var block:Block in blocks.members)
@@ -339,6 +346,16 @@ package gameplay
 			cursor.y -= pixels;
 			
 			scrollingOffset += pixels;
+			while(scrollingOffset > Block.HEIGHT)
+			{
+				addRow( Controller.generateRow() );
+//				scrollingOffset -= Block.HEIGHT;
+//				for each (var block:Block in blocks.members)
+//				{
+//					block.y += Block.HEIGHT;
+//				}
+			}
+			
 		}
 		
 		//		public function checkAll():void
@@ -508,14 +525,33 @@ package gameplay
 		
 		override public function update():void
 		{
+			// handle swapping
 			if(FlxG.keys.justPressed("SPACE"))
 			{
 				swap( cursor.row, cursor.column );
 			}
 			
+			// draw everything.
 			
+			for each(var b:Block in blocks.members)
+			{
+				b.x = getColumnPixels(b.column);
+				b.y = getRowPixels(b.row);
+				
+			}
+			cursor.x = getColumnPixels(cursor.column) + Cursor.OFFSET.x;
+			cursor.y = getRowPixels(cursor.row) + Cursor.OFFSET.y;
 			
 			super.update();
+		}
+		
+		private function getRowPixels(row:uint):Number
+		{
+			return ORIGIN.y - Block.HEIGHT * row - scrollingOffset;
+		}
+		private function getColumnPixels(column:uint):Number
+		{
+			return ORIGIN.x + Block.WIDTH * column;
 		}
 	}
 }

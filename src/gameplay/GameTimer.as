@@ -17,13 +17,13 @@ package gameplay
 		
 		public function run():void
 		{
-			trace('run called.');
+			//trace('run called.');
 			TweenLite.delayedCall( levelToScrollingTime(Board.LEVEL) / 1000, onTick );
 		}
 		
 		public function onTick():void
 		{
-			trace('onTick called.');
+			//trace('onTick called.');
 			board.scroll();
 			run();
 		}

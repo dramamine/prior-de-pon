@@ -90,7 +90,7 @@ package gameplay
 		 * it moves all the blocks upwards. 
 		 * 
 		 */		
-		private function generateRow():Vector.<Block>
+		public static function generateRow():Vector.<Block>
 		{
 			var newBlocks:Vector.<Block> = new Vector.<Block>;
 			// add a random block to each column

@@ -117,6 +117,7 @@ package gameplay
 			_wasMoved = value;
 		}
 
+		
 		public function get column():uint
 		{
 			return _column;
@@ -127,8 +128,12 @@ package gameplay
 			//trace('block at (' + this.column + ',' + this.row + ') moved to column ' + value);
 			// also handle graphics
 			// TODO tweening, let's just do it suddenly for now
-			var columnDelta:int = value - this.column;
-			this.x += columnDelta * Block.WIDTH;
+//			if(changeGraphics)
+//			{
+//				var columnDelta:int = value - this.column;
+//				this.x += columnDelta * Block.WIDTH;
+//			}
+			
 			//trace('new x: ' + this.x);
 			_column = value;
 		}
@@ -142,8 +147,11 @@ package gameplay
 		{
 			// also handle graphics
 			// TODO tweening, let's just do it suddenly for now
-			var rowDelta:int = value - this.row;
-			this.y -= rowDelta * Block.HEIGHT;
+//			if(changeGraphics)
+//			{
+//				var rowDelta:int = value - this.row;
+//				this.y -= rowDelta * Block.HEIGHT;
+//			}
 			
 			_row = value;
 		}
