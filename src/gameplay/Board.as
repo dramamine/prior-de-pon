@@ -100,7 +100,18 @@ package gameplay
 			var blockA:Block = getBlockAt(row, column);
 			var blockB:Block = getBlockAt(row, column+1);
 			
-			if(blockA.state == blockB.state == Block.ACTIVE)
+			if(blockA == null && blockB == null) return;
+			if(blockA == null)
+			{
+				blockB.column--;
+				checkGravity(blockB.column + 1);
+			}
+			else if(blockB == null)
+			{
+				blockA.column++;
+				checkGravity(blockB.column - 1);
+			}
+			else if(blockA.state == Block.ACTIVE && blockB.state == Block.ACTIVE)
 			{
 				blockA.column++;
 				blockB.column--;
@@ -226,13 +237,26 @@ package gameplay
 		 */
 		private static function getSequenceCount(blocks:Vector.<Block>, indexToCheck:int):int
 		{
-			// don't check inactive blocks!
-			//if( blocks[indexToCheck].state != Block.ACTIVE ) return 0;
+			// don't check matched blocks
+			if( blocks[indexToCheck].state == Block.MATCHED) return 1;
+			
+			
+			function isAdjacent(blockA:Block, blockB:Block):Boolean
+			{
+				if(blockA.row == blockB.row
+					&& Math.abs( blockA.column - blockB.column) == 1 ) return true;
+				else if(blockA.column == blockB.column
+					&& Math.abs( blockA.row - blockB.row) == 1 ) return true;
+				return false;
+			}
+			
 			
 			var counter:int = 1;
 			for (var iterator:int = indexToCheck+1; iterator < blocks.length; iterator++)
 			{
-				if (blocks[indexToCheck].equals( blocks[iterator] ))
+				// make sure the blocks are actually adjacent.
+				if (blocks[indexToCheck].equals( blocks[iterator] )
+				&& isAdjacent(blocks[iterator], blocks[iterator - 1]))
 				{
 					counter++;
 				}
@@ -244,6 +268,8 @@ package gameplay
 			}
 			
 			return counter;
+			
+			
 		}
 		
 		/**
@@ -258,7 +284,7 @@ package gameplay
 			
 			function columnMatcher(o:Block, index:int, arr:Array):Boolean
 			{
-				if(o == null) return false;
+				if(o == null || !o.exists) return false;
 				return o.column == column;
 			}
 			
@@ -285,7 +311,7 @@ package gameplay
 		{
 			function coordinateMatcher(o:Block, index:int, arr:Array):Boolean
 			{
-				if(o == null) return false;
+				if(o == null || !o.exists) return false;
 				return (o.row == row && o.column == column);
 			}
 			if(blocks.members.filter(coordinateMatcher).length > 0)
@@ -305,7 +331,7 @@ package gameplay
 			
 			function rowMatcher(o:Block, index:int, arr:Array):Boolean
 			{
-				if(o == null) return false;
+				if(o == null || !o.exists) return false;
 				return o.row == row;
 			}
 			
@@ -501,8 +527,33 @@ package gameplay
 					block.kill();
 				}
 				
-				checkGravity();				
+				checkAllGravity();				
 			});
+		}
+		
+		
+		private function checkGravity(columnID:int):void
+		{
+			var column:Vector.<Block>;
+			var lastRealBlock:int = 0;
+			column = getColumn(columnID);
+			// assumes that this is sorted by row
+			for each (var block:Block in column)
+			{
+				if (block.exists
+					&& block.row == lastRealBlock)
+				{
+					// everything's good
+					lastRealBlock++;
+				}
+				else
+				{
+					// move it down enough rows
+					block.row == lastRealBlock;
+					lastRealBlock++;
+				}
+				
+			}
 		}
 		
 		/**
@@ -510,33 +561,18 @@ package gameplay
 		 * Flixel does have some functions to handle gravity, but we need to make sure our
 		 * "blocks" vector is set up properly. 
 		 * 
+		 * 
 		 */		
 		
-		private function checkGravity():void
+		
+		
+		private function checkAllGravity():void
 		{
-			var column:Vector.<Block>;
-			var lastRealBlock:int = 0;
+			trace('checkGravity called.');
+			
 			for (var i:int=0; i < Board.COLUMNS; i++)
 			{
-				column = getColumn(i);
-				// assumes that this is sorted by row
-				for each (var block:Block in column)
-				{
-					if (block.exists
-						&& block.row == lastRealBlock)
-					{
-						// everything's good
-						lastRealBlock++;
-					}
-					else
-					{
-						// move it down enough rows
-						block.row == lastRealBlock;
-						lastRealBlock++;
-					}
-					
-				}
-				
+				checkGravity(i);				
 			}
 			
 			//			trace('checkGravity called.');

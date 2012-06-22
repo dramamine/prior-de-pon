@@ -10,7 +10,7 @@ package
 		public function Main()
 		{
 			super(320,240,SinglePlayer,2);
-			trace('hi');
+			//trace('hi');
 		}
 	}
 }
