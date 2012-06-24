@@ -549,7 +549,7 @@ package gameplay
 				else
 				{
 					// move it down enough rows
-					block.row == lastRealBlock;
+					block.row = lastRealBlock;
 					lastRealBlock++;
 				}
 				
