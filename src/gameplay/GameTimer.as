@@ -1,5 +1,6 @@
 package gameplay
 {
+	import com.greensock.TimelineLite;
 	import com.greensock.TweenLite;
 	
 	import org.flixel.FlxBasic;
@@ -7,6 +8,9 @@ package gameplay
 	public class GameTimer extends FlxBasic
 	{
 		private var board:Board;
+		private var _isTurboScrolling:Boolean = false;
+		private const TURBO_SCROLLING_SPEED:Number = .03125; // scroll one block in half a second.
+		private const TURBO_DELAY:Number = .35; // after scrolling to next block, how long to wait
 		
 		public function GameTimer(theBoard:Board)
 		{
@@ -26,6 +30,41 @@ package gameplay
 			//trace('onTick called.');
 			board.scroll();
 			run();
+		}
+		
+		/**
+		 * This function scrolls everything up to activate one more row. 
+		 * @param pixelsLeft
+		 * 
+		 */
+		public function activateTurboScroll(pixelsLeft:int):void
+		{
+			// if we're already scrolling, don't do anything.
+			// this allows us to ignore if the player hits the scroll key
+			// twice in a row, or holds the key down.
+			if(_isTurboScrolling) return;
+			
+			_isTurboScrolling = true;
+			stop();
+			
+			trace('acivating turbo scroll.');
+			
+			var tl:TimelineLite = new TimelineLite;
+			for(var i:int = 0; i <= pixelsLeft; i++)
+			{
+				tl.append(new TweenLite(this, TURBO_SCROLLING_SPEED, {
+					onComplete:board.scroll}
+				));
+				//TweenLite.delayedCall( i * TURBO_SCROLLING_SPEED, board.scroll );
+			}
+			
+			tl.append(new TweenLite(this, TURBO_DELAY, {
+				onComplete:function(){
+					_isTurboScrolling = false;
+					run();
+				}
+			}));
+			
 		}
 		
 		public function stop():void

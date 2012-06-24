@@ -15,7 +15,7 @@ package gameplay
 		public static const MAX_ROWS:int = 13;
 		public static const PANIC_ROWS:int = 10;
 		public static const ORIGIN:FlxPoint = new FlxPoint(50,200);
-		public static const LEVEL:int = 99;
+		public static const LEVEL:int = 20;
 		private var _scrollingOffset:int = 0;
 		
 		private var cursor:Cursor;
@@ -346,6 +346,17 @@ package gameplay
 		}
 		
 		
+		public function get scrollingOffset():int
+		{
+			return _scrollingOffset;
+		}
+		
+		public function set scrollingOffset(value:int):void
+		{
+			_scrollingOffset = value;
+			
+		}
+		
 		
 		/**
 		 * Shifts the position of all blocks upwards. This is done generally to make room for
@@ -380,17 +391,6 @@ package gameplay
 			cursor.row++;
 		}
 		
-		public function get scrollingOffset():int
-		{
-			return _scrollingOffset;
-		}
-		
-		public function set scrollingOffset(value:int):void
-		{
-			_scrollingOffset = value;
-			
-		}
-		
 		
 		/**
 		 * Scrolls each block upwards by a certain number of pixels. 
@@ -420,7 +420,7 @@ package gameplay
 			}
 			
 		}
-		
+				
 		//		public function checkAll():void
 		//		{
 		//			for (var i:uint = 0; i < blocks.length; i++)
@@ -619,6 +619,12 @@ package gameplay
 			if(FlxG.keys.justPressed("SPACE"))
 			{
 				swap( cursor.row, cursor.column );
+			}
+			
+			// handle scrolling
+			if(FlxG.keys.justPressed("SHIFT"))
+			{
+				timer.activateTurboScroll( Block.HEIGHT - scrollingOffset );
 			}
 			
 			// draw everything.
