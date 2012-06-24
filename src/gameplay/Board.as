@@ -2,6 +2,9 @@ package gameplay
 {
 	import com.greensock.TweenLite;
 	
+	import flash.events.Event;
+	import flash.utils.Dictionary;
+	
 	import org.flixel.FlxBasic;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
@@ -22,6 +25,7 @@ package gameplay
 		private var timer:GameTimer;
 		private var blocks:FlxGroup;
 		private var cursorGroup:FlxGroup;
+		private var comboTracker:Dictionary = new Dictionary;
 		
 		public function Board()
 		{
@@ -505,14 +509,19 @@ package gameplay
 		/**
 		 * This function sets all blocks to MATCHED, calls a timer to make them disappear,
 		 * and handles chain / combo / scoring effects. 
+		 * [v4] Now made recursive to handle chaining.
 		 * @param matchedBlocks: a Vector containing blocks that are part of a set.
+		 * @param chain: the iteration of chains.
 		 * 
 		 */		
-		private function handleSet(matchedBlocks:Vector.<Block>):void
+		private function handleSet(matchedBlocks:Vector.<Block>, chain:int = 0):void
 		{
 			if(matchedBlocks == null || matchedBlocks.length == 0) return;
 			
-			trace('handleSet called with ' + matchedBlocks.length + ' blocks.');
+			chain++;
+			trace('handleSet called with ' + matchedBlocks.length + ' blocks, chain count is now ' + chain);
+			
+			
 			// TODO Auto Generated method stub
 			for each(var block:Block in matchedBlocks)
 			{
@@ -527,13 +536,20 @@ package gameplay
 					block.kill();
 				}
 				
-				checkAllGravity();				
+				// run checkAllGravity, and add the blocks to fall to the combo tracker.
+				for each (var block:Block in checkAllGravity())
+				{
+					comboTracker[block] = chain;
+				}
+				
+				// if gravity causes a chain, we need to keep this going.
 			});
 		}
 		
 		
-		private function checkGravity(columnID:int):void
+		private function checkGravity(columnID:int):Vector.<Block>
 		{
+			var fell:Vector.<Block> = new Vector.<Block>;
 			var column:Vector.<Block>;
 			var lastRealBlock:int = 0;
 			column = getColumn(columnID);
@@ -549,11 +565,31 @@ package gameplay
 				else
 				{
 					// move it down enough rows
-					block.row = lastRealBlock;
+					block.fallToRow(lastRealBlock, onBlockFell);
+					fell.push(block);
 					lastRealBlock++;
 				}
 				
 			}
+			return fell;
+		}
+		
+		/**
+		 * Callback for when a block finishes falling. 
+		 * @param e
+		 * @return 
+		 * 
+		 */
+		private function onBlockFell(block:Block):void
+		{
+			trace('onBlockFell called.');
+			// see if this block causes any sets
+			handleSet( checkForSet( block ) ,
+				comboTracker[block]
+			);
+			
+			// remove this block from the chain tracker
+			delete comboTracker[block];
 		}
 		
 		/**
@@ -566,33 +602,17 @@ package gameplay
 		
 		
 		
-		private function checkAllGravity():void
+		private function checkAllGravity():Vector.<Block>
 		{
 			trace('checkGravity called.');
-			
+			var fell:Vector.<Block> = new Vector.<Block>;
+			var theseFell:Vector.<Block> = new Vector.<Block>;
 			for (var i:int=0; i < Board.COLUMNS; i++)
 			{
-				checkGravity(i);				
+				theseFell = checkGravity(i);
+				if(theseFell.length > 0) fell = fell.concat(theseFell);		
 			}
-			
-			//			trace('checkGravity called.');
-			//			for each(var column:Vector.<Block> in blocks)
-			//			{
-			//				// TODO make sure we're not dealing with huge blocks of garbage.
-			//				
-			//				//column.filter( function(b:Block):Boolean{ return b.alive });
-			//				
-			//				for(var index:int = 0; index < column.length; index++)
-			//				{
-			//					if(column[index].alive) continue;
-			//					else
-			//					{
-			//						column.splice(index,1);
-			//						column.slice(index).map( function(b:Block, i:int, a:*){b.y += Block.HEIGHT;} );
-			//						index--;
-			//					}
-			//				}
-			//			}
+			return fell;
 		}
 		
 		public function eliminateMatches():void
@@ -631,6 +651,7 @@ package gameplay
 			
 			for each(var b:Block in blocks.members)
 			{
+				if(b.state == Block.FALLING) continue;
 				b.x = getColumnPixels(b.column);
 				b.y = getRowPixels(b.row);
 				

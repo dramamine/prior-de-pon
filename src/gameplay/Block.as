@@ -1,5 +1,8 @@
 package gameplay
 {
+	import com.greensock.TweenLite;
+	import com.greensock.easing.Quad;
+	
 	import flash.utils.Dictionary;
 	
 	import org.flixel.FlxSprite;
@@ -24,6 +27,7 @@ package gameplay
 		public static const ACTIVE:uint = 1;
 		public static const MATCHED:uint = 2;
 		public static const GARBAGE:uint = 3;
+		public static const FALLING:uint = 4;
 		
 		private static var graphicLookup:Dictionary;
 		
@@ -34,6 +38,7 @@ package gameplay
 		//private var _position:uint;
 		private var _row:uint = 0;
 		private var _column:uint = 0;
+		private var FALLING_SPEED:Number = .1;
 		
 		/**
 		 * Trying to design Blocks to involve as little code/action as possible.
@@ -161,6 +166,28 @@ package gameplay
 //			}
 			
 			_row = value;
+		}
+		
+		public function fallToRow(value:uint, callback:Function):void
+		{
+			//this.row = value;
+			this.state = FALLING;
+			
+			var deltaRows:int = this.row - value;
+			TweenLite.to(this, deltaRows * FALLING_SPEED, {
+				y: y + deltaRows*Block.HEIGHT - 1, // tweak this if it's too jumpy
+				ease:Quad.easeIn, // TODO check out 'heavier' easings
+				onComplete:finishedFalling,
+				onCompleteParams:[this]
+			});
+			
+			function finishedFalling(block:Block)
+			{
+				block.row = value;
+				block.state = ACTIVE;
+				callback(block);
+			}
+				
 		}
 
 
