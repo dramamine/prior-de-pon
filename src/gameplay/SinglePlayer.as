@@ -4,9 +4,20 @@ package gameplay
 	
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxState;
+	import org.flixel.FlxSprite;
 
+	
+	
 	public class SinglePlayer extends FlxState
 	{
+		
+		
+		
+		
+		
+		
+		[Embed(source="../assets/tetris-attack-bg.png")] private static var ImgTreeBackground:Class;
+		
 		//private var _board:Board;
 		
 		/**
@@ -20,9 +31,15 @@ package gameplay
 			trace('singleplayer called');
 			super();
 			
+			// draw background image
+			// TODO make the gameplay area transparent, then add this AFTER the controller.
+			add(new FlxSprite(0,0,ImgTreeBackground));
+			
+			
 			var controller:Controller = new Controller();
 			add(controller);
 			controller.initialize();
+			
 			
 			
 			//board = new Board();

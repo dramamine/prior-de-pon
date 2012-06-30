@@ -9,6 +9,7 @@ package gameplay
 	{
 		private var board:Board;
 		private var _isTurboScrolling:Boolean = false;
+		private var _isStopped:Boolean = false;
 		private const TURBO_SCROLLING_SPEED:Number = .03125; // scroll one block in half a second.
 		private const TURBO_DELAY:Number = .35; // after scrolling to next block, how long to wait
 		
@@ -21,6 +22,7 @@ package gameplay
 		
 		public function run():void
 		{
+			_isStopped = false;
 			//trace('run called.');
 			TweenLite.delayedCall( levelToScrollingTime(Board.LEVEL) / 1000, onTick );
 		}
@@ -67,9 +69,26 @@ package gameplay
 			
 		}
 		
-		public function stop():void
+		/**
+		 * Stops the timer.  
+		 * @param time: the length of time to freeze the screen. Enter 0 for 'forever until re-activated'.
+		 */
+		public function stop(time:Number = 0):void
 		{
 			TweenLite.killDelayedCallsTo(onTick);
+			
+			// if it's already stopped (ex. we're on a 3x combo), reset the delayed call to run()
+			if(_isStopped)
+			{
+				TweenLite.killDelayedCallsTo(run);
+			}
+			
+			_isStopped = true;
+			
+			if(time > 0)
+			{
+				TweenLite.delayedCall( time, run );
+			}
 		}
 		
 		/**

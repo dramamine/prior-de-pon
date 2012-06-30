@@ -14,6 +14,8 @@ package gameplay
 	
 	public class Board extends FlxGroup
 	{
+		
+		
 		public static const COLUMNS:int = 6;
 		public static const MAX_ROWS:int = 13;
 		public static const PANIC_ROWS:int = 10;
@@ -27,6 +29,8 @@ package gameplay
 		private var cursorGroup:FlxGroup;
 		private var comboTracker:Dictionary = new Dictionary;
 		private var scoreManager:ScoreManager;
+		
+		
 		
 		public function Board()
 		{
@@ -526,13 +530,19 @@ package gameplay
 			// scoring
 			scoreManager.tally(matchedBlocks, chain);
 			
+			// freezing
+			if(chain > 1 || matchedBlocks.length > 3)
+			{
+				timer.stop(Properties.SCREEN_FREEZE_LENGTH);
+			}
+			
 			// TODO Auto Generated method stub
 			for each(var block:Block in matchedBlocks)
 			{
 				block.match();
 			}
 			
-			TweenLite.delayedCall(2.5, function()
+			TweenLite.delayedCall(Properties.BLOCK_DISAPPEARING_DELAY, function()
 			{
 				// TODO could make these "chain-delete", might be cooler.
 				for each(var block:Block in matchedBlocks)
