@@ -2,8 +2,13 @@
 bin-debug/
 bin-release/
 
+
 # Project property files
 .actionScriptProperties
 .flexProperties
 .settings/
 .project
+
+# junk
+screenshots/
+assets/*.psd

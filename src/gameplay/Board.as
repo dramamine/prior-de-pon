@@ -26,6 +26,7 @@ package gameplay
 		private var blocks:FlxGroup;
 		private var cursorGroup:FlxGroup;
 		private var comboTracker:Dictionary = new Dictionary;
+		private var scoreManager:ScoreManager;
 		
 		public function Board()
 		{
@@ -43,6 +44,9 @@ package gameplay
 			
 			timer = new GameTimer(this);
 			timer.run();
+			
+			scoreManager = new ScoreManager();
+			add(scoreManager);
 			
 		}
 		
@@ -105,15 +109,13 @@ package gameplay
 			var blockB:Block = getBlockAt(row, column+1);
 			
 			if(blockA == null && blockB == null) return;
-			if(blockA == null)
+			if(blockA == null || blockB == null)
 			{
-				blockB.column--;
-				checkGravity(blockB.column + 1);
-			}
-			else if(blockB == null)
-			{
-				blockA.column++;
-				checkGravity(blockB.column - 1);
+				if(blockA == null) blockB.column--;
+				else if(blockB == null) blockA.column++;
+				
+				checkGravity(column);
+				checkGravity(column+1);
 			}
 			else if(blockA.state == Block.ACTIVE && blockB.state == Block.ACTIVE)
 			{
@@ -521,6 +523,8 @@ package gameplay
 			chain++;
 			trace('handleSet called with ' + matchedBlocks.length + ' blocks, chain count is now ' + chain);
 			
+			// scoring
+			scoreManager.tally(matchedBlocks, chain);
 			
 			// TODO Auto Generated method stub
 			for each(var block:Block in matchedBlocks)
