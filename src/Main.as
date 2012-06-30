@@ -2,7 +2,7 @@ package
 {
 	import flash.display.Sprite;
 	import org.flixel.*;
-	import gameplay.SinglePlayer;
+	import states.SinglePlayer;
 	
 	[SWF(width="640", height="480", backgroundColor="#000000")]
 	public class Main extends FlxGame

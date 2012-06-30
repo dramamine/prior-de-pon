@@ -1,9 +1,10 @@
-package gameplay
+package model
 {
 	import com.greensock.TweenLite;
 	
-	import flash.events.Event;
 	import flash.utils.Dictionary;
+	
+	import controller.Controller;
 	
 	import org.flixel.FlxBasic;
 	import org.flixel.FlxG;
@@ -19,14 +20,14 @@ package gameplay
 		public static const COLUMNS:int = 6;
 		public static const MAX_ROWS:int = 13;
 		public static const PANIC_ROWS:int = 10;
-		public static const ORIGIN:FlxPoint = new FlxPoint(50,200);
+		
 		public static const LEVEL:int = 20;
 		private var _scrollingOffset:int = 0;
 		
-		private var cursor:Cursor;
+		private var _cursor:Cursor;
 		private var timer:GameTimer;
-		private var blocks:FlxGroup;
-		private var cursorGroup:FlxGroup;
+		private var _blocks:FlxGroup;
+		//private var cursorGroup:FlxGroup;
 		private var comboTracker:Dictionary = new Dictionary;
 		private var scoreManager:ScoreManager;
 		
@@ -37,20 +38,83 @@ package gameplay
 			super();
 			
 			blocks = new FlxGroup();
-			add(blocks);
-			cursorGroup = new FlxGroup();
-			add(cursorGroup);
+			//add(blocks); // TODO try commenting this out
+			//cursorGroup = new FlxGroup();
+			//add(cursorGroup); // TODO try commenting this out
 			
 			cursor = new Cursor();
-			cursorGroup.add(cursor);
-			cursor.x += ORIGIN.x;
-			cursor.y += ORIGIN.y;
+			//cursorGroup.add(cursor);
+			//cursor.x += ORIGIN.x;
+			//cursor.y += ORIGIN.y;
 			
 			timer = new GameTimer(this);
 			timer.run();
 			
 			scoreManager = new ScoreManager();
-			add(scoreManager);
+			//add(scoreManager);
+			
+		}
+		
+		
+		/**
+		 * Creates a starting board. Also performs checks to make sure we
+		 * don't start with any sets on the board.
+		 * 
+		 * @param rows: the number of rows of blocks to generate.
+		 * @param jagged: whether the blocks should create a 'flat' pattern or
+		 * 		a jagged pattern (like buildings).
+		 * 
+		 * 
+		 */	
+		public function initialize(rows:int = 9, jagged:Boolean = false):void
+		{
+			Block.initDictionary();
+			
+			//var newRow:Vector.<Block>;
+			for(var i:int = 0; i < rows; i++)
+			{
+				
+				addRow( generateRow(), false );
+				
+			}
+			
+			eliminateMatches();
+			
+		}
+		
+		
+		/**
+		 * Generates and adds a row of blocks to the bottom of the pile. This row is not visible on the first
+		 * frame - it's generated just below the line of visibility. If there's not any room,
+		 * it moves all the blocks upwards. 
+		 * 
+		 */		
+		public static function generateRow():Vector.<Block>
+		{
+			var newBlocks:Vector.<Block> = new Vector.<Block>;
+			// add a random block to each column
+			//var newBlock:Block;
+			for(var i:int = 0; i < Board.COLUMNS; i++)
+			{
+				newBlocks.push(new Block( Math.floor(Math.random() * Block.UNIQUE_BLOCKS )));
+				//newBlock = new Block( Math.floor(Math.random() * Block.UNIQUE_BLOCKS ));
+				//newBlock.x = ORIGIN.x + column * Block.WIDTH;
+				//newBlock.y = ORIGIN.y + rowCounter * Block.HEIGHT - scrolledOffset;
+				//blocks[column].unshift( newBlock );
+				//add(newBlock);
+				//trace('added a new block with color ' + newBlock.type 
+				//	+ ' and coordinates (' + newBlock.x + ',' + newBlock.y + ')');
+			}
+			
+			return newBlocks;
+			
+			// check the last newBlock's y. if it's below the origin, we should move all blocks up.
+			//if (newBlock.y > ORIGIN.y)
+			//{
+			//	scroll(newBlock.y - ORIGIN.y);
+			//}
+			
+			//rowCounter++;
 			
 		}
 		
@@ -72,8 +136,8 @@ package gameplay
 				
 				
 				// 6/15 handling column/row adjustment from the block class
-				block.x = ORIGIN.x;// + block.column * Block.WIDTH;
-				block.y = ORIGIN.y;// - block.row * Block.HEIGHT;
+				//block.x = ORIGIN.x;// + block.column * Block.WIDTH;
+				//block.y = ORIGIN.y;// - block.row * Block.HEIGHT;
 				
 				//block.row = 0; // by default
 				block.column = column;
@@ -107,10 +171,10 @@ package gameplay
 		 * @return 
 		 * 
 		 */
-		private function swap(row:int, column:int):void
+		public function swap():void
 		{
-			var blockA:Block = getBlockAt(row, column);
-			var blockB:Block = getBlockAt(row, column+1);
+			var blockA:Block = getBlockAt(cursor.row, cursor.column);
+			var blockB:Block = getBlockAt(cursor.row, cursor.column+1);
 			
 			if(blockA == null && blockB == null) return;
 			if(blockA == null || blockB == null)
@@ -118,8 +182,8 @@ package gameplay
 				if(blockA == null) blockB.column--;
 				else if(blockB == null) blockA.column++;
 				
-				checkGravity(column);
-				checkGravity(column+1);
+				checkGravity(cursor.column);
+				checkGravity(cursor.column+1);
 			}
 			else if(blockA.state == Block.ACTIVE && blockB.state == Block.ACTIVE)
 			{
@@ -129,9 +193,9 @@ package gameplay
 			
 			// handle any potential matches all at once
 			handleSet(
-				checkRow(row)
-				.concat(checkColumn(column))
-				.concat(checkColumn(column+1))
+				checkRow(cursor.row)
+				.concat(checkColumn(cursor.column))
+				.concat(checkColumn(cursor.column+1))
 			);
 			
 		}
@@ -365,6 +429,7 @@ package gameplay
 		{
 			_scrollingOffset = value;
 			
+			
 		}
 		
 		
@@ -421,7 +486,7 @@ package gameplay
 			scrollingOffset += pixels;
 			while(scrollingOffset > Block.HEIGHT)
 			{
-				addRow( Controller.generateRow() );
+				addRow( generateRow() );
 //				scrollingOffset -= Block.HEIGHT;
 //				for each (var block:Block in blocks.members)
 //				{
@@ -613,9 +678,6 @@ package gameplay
 		 * 
 		 * 
 		 */		
-		
-		
-		
 		private function checkAllGravity():Vector.<Block>
 		{
 			trace('checkGravity called.');
@@ -629,6 +691,11 @@ package gameplay
 			return fell;
 		}
 		
+		
+		/**
+		 * Called to make sure the initial board doesn't have any matches on it. 
+		 * 
+		 */
 		public function eliminateMatches():void
 		{
 			var allMatches:Vector.<Block> = this.checkEverything();
@@ -647,42 +714,46 @@ package gameplay
 			}
 		}
 		
+		
+		
 		override public function update():void
 		{
-			// handle swapping
-			if(FlxG.keys.justPressed("SPACE"))
-			{
-				swap( cursor.row, cursor.column );
-			}
-			
-			// handle scrolling
-			if(FlxG.keys.justPressed("SHIFT"))
-			{
-				timer.activateTurboScroll( Block.HEIGHT - scrollingOffset );
-			}
-			
-			// draw everything.
-			
-			for each(var b:Block in blocks.members)
-			{
-				if(b.state == Block.FALLING) continue;
-				b.x = getColumnPixels(b.column);
-				b.y = getRowPixels(b.row);
-				
-			}
-			cursor.x = getColumnPixels(cursor.column) + Cursor.OFFSET.x;
-			cursor.y = getRowPixels(cursor.row) + Cursor.OFFSET.y;
-			
+					
 			super.update();
 		}
 		
-		private function getRowPixels(row:uint):Number
+		
+		
+		
+		/**
+		 * Handle player request to scroll more blocks. 
+		 * 
+		 */
+		public function handleTurboScroll():void
 		{
-			return ORIGIN.y - Block.HEIGHT * row - scrollingOffset;
+			timer.activateTurboScroll( Block.HEIGHT - scrollingOffset );
 		}
-		private function getColumnPixels(column:uint):Number
+
+		public function get blocks():FlxGroup
 		{
-			return ORIGIN.x + Block.WIDTH * column;
+			return _blocks;
 		}
+
+		public function set blocks(value:FlxGroup):void
+		{
+			_blocks = value;
+		}
+
+		public function get cursor():Cursor
+		{
+			return _cursor;
+		}
+
+		public function set cursor(value:Cursor):void
+		{
+			_cursor = value;
+		}
+
+
 	}
 }

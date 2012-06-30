@@ -1,4 +1,4 @@
-package gameplay
+package model
 {
 	public class Properties
 	{

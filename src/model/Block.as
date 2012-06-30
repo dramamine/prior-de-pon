@@ -1,4 +1,4 @@
-package gameplay
+package model
 {
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Quad;

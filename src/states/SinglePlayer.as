@@ -1,21 +1,20 @@
-package gameplay
+package states
 {
 	import com.greensock.TweenLite;
 	
 	import org.flixel.FlxPoint;
-	import org.flixel.FlxState;
 	import org.flixel.FlxSprite;
+	import org.flixel.FlxState;
+	import model.Board;
+	import view.SinglePlayerDisplay;
+	import controller.Controller;
 
 	
 	
 	public class SinglePlayer extends FlxState
 	{
 		
-		
-		
-		
-		
-		
+				
 		[Embed(source="../assets/tetris-attack-bg.png")] private static var ImgTreeBackground:Class;
 		
 		//private var _board:Board;
@@ -31,22 +30,23 @@ package gameplay
 			trace('singleplayer called');
 			super();
 			
+			
+			
+			var board:Board = new Board();
+			var view:SinglePlayerDisplay = new SinglePlayerDisplay(board);
+			var controller:Controller = new Controller(board, view);
+			
+			add(board);
+			add(view);
+			add(controller);
+			
 			// draw background image
 			// TODO make the gameplay area transparent, then add this AFTER the controller.
-			add(new FlxSprite(0,0,ImgTreeBackground));
 			
+			//add(new FlxSprite(0,0,ImgTreeBackground));
 			
-			var controller:Controller = new Controller();
-			add(controller);
-			controller.initialize();
+			board.initialize();
 			
-			
-			
-			//board = new Board();
-			//add(board);
-			//board.initialize();
-			
-			//TweenLite.delayedCall(3, board.checkAll);
 			
 			
 		}

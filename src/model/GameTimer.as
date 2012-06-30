@@ -1,4 +1,4 @@
-package gameplay
+package model
 {
 	import com.greensock.TimelineLite;
 	import com.greensock.TweenLite;
