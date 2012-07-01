@@ -2,9 +2,9 @@ package model
 {
 	import com.greensock.TweenLite;
 	
-	import flash.utils.Dictionary;
-	
 	import controller.Controller;
+	
+	import flash.utils.Dictionary;
 	
 	import org.flixel.FlxBasic;
 	import org.flixel.FlxG;
@@ -12,6 +12,8 @@ package model
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxU;
+	
+	import view.ScoreDisplay;
 	
 	public class Board extends FlxGroup
 	{
@@ -37,22 +39,18 @@ package model
 		{
 			super();
 			
-			blocks = new FlxGroup();
-			//add(blocks); // TODO try commenting this out
-			//cursorGroup = new FlxGroup();
-			//add(cursorGroup); // TODO try commenting this out
-			
+			blocks = new FlxGroup();	
 			cursor = new Cursor();
-			//cursorGroup.add(cursor);
-			//cursor.x += ORIGIN.x;
-			//cursor.y += ORIGIN.y;
-			
+
 			timer = new GameTimer(this);
 			timer.run();
 			
+			// I don't like the way this is set up. We shouldn't be creating views
+			// within the model like this...
 			scoreManager = new ScoreManager();
 			//add(scoreManager);
-			
+			var scoreDisplay:ScoreDisplay = new ScoreDisplay(scoreManager);
+			add(scoreDisplay);
 		}
 		
 		

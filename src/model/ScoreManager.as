@@ -11,11 +11,15 @@ package model
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxText;
 	
+	import view.ScoreDisplay;
+	
 	public class ScoreManager extends FlxGroup
 	{
 		private var _score:int;
 
 		private var scoreBox:FlxText;
+		
+		private var _view:ScoreDisplay;
 		
 		public function ScoreManager()
 		{
@@ -28,19 +32,31 @@ package model
 			//FlxG.state.add(scoreBox);
 		}
 		
+		/**
+		 * For notifying the view of changes. Had to use this instead of events
+		 * due to Flixel restrictions. 
+		 * @param display: the display to use.
+		 * @return 
+		 * 
+		 */
+		public function useView(view:ScoreDisplay)
+		{
+			this._view = view;
+		}
+		
 		public function tally(blocks:Vector.<Block>, chain:int):void
 		{
-			var upperLeftCorner:FlxPoint = new FlxPoint(
-				50,50
-				);
-			if(chain > 1) displayChain(chain, upperLeftCorner);
-			if(blocks.length > 3) displayCombo(blocks.length, upperLeftCorner);
+
+			if(chain > 1) _view.displayChain(chain);
+			if(blocks.length > 3) _view.displayCombo(blocks.length);
 			
 			score += Math.floor(
 				50 * blocks.length * .333 // i.e. 3 blocks: 50 pts each, 6 blocks: 100 each.
 				* chain
 				* (1 + Board.LEVEL / 30) // i.e. your score at lvl 75 is 2x your score at 45 and 3x your score at 15
 			);
+			
+			_view.updateScore(score);
 		}
 		
 		/**
